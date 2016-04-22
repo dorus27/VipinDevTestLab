@@ -175,7 +175,6 @@ try
 
     $credential = New-Object System.Management.Automation.PSCredential($fullUserName,$securePassword)
     Add-Computer -DomainName $domain -Credential $credential
-    AddLocalAdministrator -adminDomain $domain -adminName $userName
 }
 
 catch
