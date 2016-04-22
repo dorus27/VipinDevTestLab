@@ -4,7 +4,7 @@ Param(
     [string] $domain,
     [ValidateNotNullOrEmpty()]
     [Parameter(Mandatory=$True)]
-    [string] $userName,
+    [string] $userName
 )
 
 <##################################################################################################
