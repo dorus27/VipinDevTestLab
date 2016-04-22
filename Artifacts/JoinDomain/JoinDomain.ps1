@@ -118,6 +118,47 @@ function WriteLog
 
 ##################################################################################################
 
+# 
+# Description:
+#  - Add a domain account as local administrator.
+#
+# Parameters:
+#  - $adminDomain: domain of account to be added as admin.
+#
+# Parameters:
+#  - $adminName: user name of account to be added as admin.
+#
+# Return:
+#  - N/A.
+#
+# Notes:
+#  - N/A.
+#
+
+function AddLocalAdministrator {
+    param (
+        [Parameter(Mandatory=$true)]
+        $adminDomain,
+        
+        [Parameter(Mandatory=$true)]
+        $adminName
+    )
+    
+    # Get Localized Group Name - Once AD joined this will return null
+    $localAdministratorsGroupName = (Get-WMIObject Win32_Group -filter "LocalAccount=True AND SID='S-1-5-32-544'").Name
+
+    if($localAdministratorsGroupName)
+    {
+        $domainAlias = "$adminDomain\$adminName"
+        [string[]] $currentLocalAdministrators = net localgroup $localAdministratorsGroupName
+
+        if ($currentLocalAdministrators -notcontains $adminName -and $currentLocalAdministrators -notcontains $domainAlias) {
+            $null = net localgroup $localAdministratorsGroupName /add $domainAlias
+        }
+    }
+}
+##################################################################################################
+
 #
 # 
 #
@@ -134,6 +175,7 @@ try
 
     $credential = New-Object System.Management.Automation.PSCredential($fullUserName,$securePassword)
     Add-Computer -DomainName $domain -Credential $credential
+    AddLocalAdministrator -adminDomain $domain -adminName $userName
 }
 
 catch
